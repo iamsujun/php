@@ -29,21 +29,16 @@ RUN apt-get install -y \
     && docker-php-ext-install opcache \
     && docker-php-ext-install mysqli \
     && docker-php-ext-install bcmath \
+    && docker-php-ext-install sockets \
     && docker-php-ext-install pcntl
 #    && rm -r /var/lib/apt/lists/*
 
 # Use the default production configuration
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
-#redis
-ENV PHPREDIS_VERSION 3.1.3
-RUN curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/$PHPREDIS_VERSION.tar.gz \
-    && tar xfz /tmp/redis.tar.gz \
-    && rm -r /tmp/redis.tar.gz \
-    && mkdir -p /usr/src/php/ext \
-    && mv phpredis-$PHPREDIS_VERSION /usr/src/php/ext/redis \
-    && docker-php-ext-install redis \
-    && rm -rf /usr/src/php
+RUN pecl install redis && docker-php-ext-enable redis
+RUN pecl install mongodb && docker-php-ext-enable mongodb
+RUN pecl install swoole && docker-php-ext-enable swoole
 
 #tideways php xhprof
 ENV XHPROF_VERSION 5.0-beta3
@@ -53,16 +48,6 @@ RUN curl -L -o /tmp/php-xhprof.tar.gz https://codeload.github.com/tideways/php-x
     && mkdir -p /usr/src/php/ext \
     && mv php-xhprof-extension-$XHPROF_VERSION /usr/src/php/ext/tideways-xhprof \
     && docker-php-ext-install tideways-xhprof \
-    && rm -rf /usr/src/php
-
-#mongo
-ENV MONGO_VERSION 1.5.4
-RUN curl -L -o /tmp/mongodb.tgz http://pecl.php.net/get/mongodb-$MONGO_VERSION.tgz \
-    && tar xfz /tmp/mongodb.tgz \
-    && rm -r /tmp/mongodb.tgz \
-    && mkdir -p /usr/src/php/ext \
-    && mv mongodb-$MONGO_VERSION /usr/src/php/ext/mongodb \
-    && docker-php-ext-install mongodb \
     && rm -rf /usr/src/php
 
 #rdkafka
