@@ -60,7 +60,7 @@ RUN curl -L -o /tmp/rdkafka.tgz http://pecl.php.net/get/rdkafka-$RDKAFKA_VERSION
     && docker-php-ext-install rdkafka \
      && rm -rf /usr/src/php
 
-FROM base as composer
+#FROM base as composer
 ENV COMPOSER_HOME /tmp
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 RUN composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/
@@ -68,7 +68,7 @@ ENV PATH $COMPOSER_HOME/vendor/bin:$PATH
 
 RUN git config --global credential.helper cache
 
-FROM base as work
+#FROM base as work
 RUN usermod -u 1000 www-data
 
 WORKDIR /data1/www
